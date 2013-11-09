@@ -1,6 +1,6 @@
 export KBUILD_BUILD_USER="Mohancm"
 export KBUILD_BUILD_HOST="A.M.T"
-export CROSS_COMPILE=/home/mohancm/aarch64-linux-android-4.9/bin/aarch64-linux-android-
+export CROSS_COMPILE=/home/mohanmanjappa/aarch64-linux-android-4.9/bin/aarch64-linux-android-
 
 export ARCH=arm64
 
