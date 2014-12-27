@@ -531,6 +531,12 @@ config LENOVO_PERFTAGS
 	default n
 #lenovo-sw, chenzz3, add perftags driver, end
 
+config THUNDERQUAKE_ENGINE_GPL
+   tristate "Vibrator Intensity Controller for MTK Vibrator"
+   default y
+   help
+   Vibrator Intensity Controller for MTK Vibrator v1.0
+
 source "drivers/misc/c2port/Kconfig"
 source "drivers/misc/eeprom/Kconfig"
 source "drivers/misc/cb710/Kconfig"
