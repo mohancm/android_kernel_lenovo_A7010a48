@@ -1074,6 +1074,32 @@ afunc_set_alt(struct usb_function *fn, unsigned intf, unsigned alt)
 		prm = &uac2->p_prm;
 		config_ep_by_speed(gadget, fn, ep);
 		agdev->as_in_alt = alt;
+
+
+		/* pre-calculate the playback endpoint's interval */
+		if (gadget->speed == USB_SPEED_FULL) {
+			ep_desc = &fs_epin_desc;
+			factor = 1000;
+		} else {
+			ep_desc = &hs_epin_desc;
+			factor = 8000;
+		}
+
+		/* pre-compute some values for iso_complete() */
+		uac2->p_framesize = opts->p_ssize *
+				    num_channels(opts->p_chmask);
+		rate = opts->p_srate * uac2->p_framesize;
+		uac2->p_interval = factor / (1 << (ep_desc->bInterval - 1));
+		uac2->p_pktsize = min_t(unsigned int, rate / uac2->p_interval,
+					prm->max_psize);
+
+		if (uac2->p_pktsize < prm->max_psize)
+			uac2->p_pktsize_residue = rate % uac2->p_interval;
+		else
+			uac2->p_pktsize_residue = 0;
+
+		req_len = uac2->p_pktsize;
+		uac2->p_residue = 0;
 	} else {
 		dev_err(&uac2->pdev.dev,
 			"%s:%d Error!\n", __func__, __LINE__);
