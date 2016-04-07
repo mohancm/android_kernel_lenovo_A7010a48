@@ -2314,9 +2314,11 @@ static void mtk_disp_rgb_work(struct work_struct *work) {
 	mutex_unlock(&rgb_wq->lock);
 }
 #endif
+
 static int __init mtk_disp_mgr_init(void)
 {
 	int rc = 0;
+
 	if (platform_device_register(&mtk_disp_mgr_device))
 		return -ENODEV;
 
@@ -2340,6 +2342,7 @@ static void __exit mtk_disp_mgr_exit(void)
 	mutex_destroy(&mtk_rgb_work_queue.lock);
 	sysfs_remove_file(&(mtk_disp_mgr_device.dev.kobj), &dev_attr_rgb.attr);
 #endif
+
 	cdev_del(mtk_disp_mgr_cdev);
 	unregister_chrdev_region(mtk_disp_mgr_devno, 1);
 
