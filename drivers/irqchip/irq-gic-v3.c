@@ -172,12 +172,16 @@ static void gic_enable_redist(void)
 	val &= ~GICR_WAKER_ProcessorSleep;
 	writel_relaxed(val, rbase + GICR_WAKER);
 
-	while (readl_relaxed(rbase + GICR_WAKER) & GICR_WAKER_ChildrenAsleep) {
-		count--;
-		if (!count) {
-			pr_err_ratelimited("redist didn't wake up...\n");
-			return;
-		}
+	if (!enable) {		/* Check that GICR_WAKER is writeable */
+		val = readl_relaxed(rbase + GICR_WAKER);
+		if (!(val & GICR_WAKER_ProcessorSleep))
+			return;	/* No PM support in this redistributor */
+	}
+
+	while (--count) {
+		val = readl_relaxed(rbase + GICR_WAKER);
+		if (enable ^ (val & GICR_WAKER_ChildrenAsleep))
+			break;
 		cpu_relax();
 		udelay(1);
 	};
