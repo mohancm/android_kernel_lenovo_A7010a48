@@ -59,12 +59,6 @@ static unsigned long mmap_rnd(void)
 {
 	unsigned long rnd = 0;
 
-<<<<<<< HEAD
-	if (current->flags & PF_RANDOMIZE)
-		rnd = (long)get_random_int() & (STACK_RND_MASK >> 1);
-
-	return rnd << (PAGE_SHIFT + 1);
-=======
 	if (current->flags & PF_RANDOMIZE) {
 #ifdef CONFIG_COMPAT
 		if (test_thread_flag(TIF_32BIT))
@@ -74,7 +68,6 @@ static unsigned long mmap_rnd(void)
 			rnd = (unsigned long)get_random_int() & ((1 << mmap_rnd_bits) - 1);
 	}
 	return rnd << PAGE_SHIFT;
->>>>>>> 61e00ec... BACKPORT: FROMLIST: arm64: mm: support ARCH_MMAP_RND_BITS.
 }
 
 static unsigned long mmap_base(void)
