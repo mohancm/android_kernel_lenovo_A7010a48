@@ -1,0 +1,17 @@
+config MTK_FLASHLIGHT
+  bool CONFIG_MTK_FLASHLIGHT
+  default n
+  help
+    CONFIG_MTK_FLASHLIGHT
+
+config CUSTOM_KERNEL_FLASHLIGHT
+        string "CUSTOM_KERNEL_FLASHLIGHT"
+        help
+          Kernel space cameara flashlight driver. You can use this driver
+          choose cameara flashlight type.
+	  
+#lenovo.sw START wuyt3 config k5  camera
+config LENOVO_TORCH_MODE
+	bool "LENOVO_TORCH_MODE"
+	default n
+#lenovo.sw end wuyt3 config k5  camera	
