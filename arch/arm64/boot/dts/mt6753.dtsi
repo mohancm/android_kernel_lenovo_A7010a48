@@ -1315,7 +1315,7 @@ initrd=0x44000000,0x300000 loglevel=8 androidboot.hardware=mt6735";
 		accel_gyro_int2: accel_gyro_int2{
 			compatible = "mediatek, accel_gyro_int2-eint";
 
-	};		
+	    };		
 	};
 /*Lenovo-sw weimh1 add 2016-3-3 end:add for accel*/
 
