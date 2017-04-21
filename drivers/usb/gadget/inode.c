@@ -652,7 +652,15 @@ fail:
 	}
 	iocb->private = priv;
 	priv->iocb = iocb;
-	priv->iv = iv;
+	if (iv) {
+		priv->iv = kmemdup(iv, nr_segs * sizeof(struct iovec),
+				   GFP_KERNEL);
+		if (!priv->iv) {
+			kfree(priv);
+			value = -ENOMEM;
+			goto fail;
+		}
+	}
 	priv->nr_segs = nr_segs;
 	INIT_WORK(&priv->work, ep_user_copy_worker);
 
