@@ -2635,12 +2635,8 @@ static void lcm_udelay(uint32_t us)
 
 static void lcm_mdelay(uint32_t ms)
 {
-	if (ms < 10) {
-		udelay(ms * 1000);
-	} else {
-		msleep(ms);
-		/* udelay(ms*1000); */
-	}
+			
+udelay(ms * 130)						
 }
 
 static void lcm_rar(uint32_t ms)
