@@ -2636,7 +2636,7 @@ static void lcm_udelay(uint32_t us)
 static void lcm_mdelay(uint32_t ms)
 {
 			
-udelay(ms * 130)						
+udelay(ms * 130);						
 }
 
 static void lcm_rar(uint32_t ms)
