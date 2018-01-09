@@ -83,10 +83,7 @@ obj-$(CONFIG_HFSPLUS_FS)	+= hfsplus/ # Before hfs to find wrapped HFS+
 obj-$(CONFIG_HFS_FS)		+= hfs/
 obj-$(CONFIG_ECRYPT_FS)		+= ecryptfs/
 
-# ifeq ($(CONFIG_SDCARD_FS), yes)
-obj-y		+= sdcardfs/
-# endif
-
+obj-$(CONFIG_SDCARD_FS)		+= sdcardfs/
 obj-$(CONFIG_VXFS_FS)		+= freevxfs/
 obj-$(CONFIG_NFS_FS)		+= nfs/
 obj-$(CONFIG_EXPORTFS)		+= exportfs/
