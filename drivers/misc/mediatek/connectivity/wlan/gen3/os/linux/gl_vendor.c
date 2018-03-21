@@ -98,7 +98,8 @@ int mtk_cfg80211_nla_put_type(struct sk_buff *skb, ENUM_NLA_PUT_DATE_TYPE type, 
 	return 0;
 }
 
-int mtk_cfg80211_vendor_get_channel_list(struct wiphy *wiphy, struct wireless_dev *wdev, const void *data, int data_len)
+int mtk_cfg80211_vendor_get_channel_list(struct wiphy *wiphy, struct wireless_dev *wdev,
+					 const void *data, int data_len)
 {
 	P_GLUE_INFO_T prGlueInfo;
 	struct nlattr *attr;
@@ -113,24 +114,32 @@ int mtk_cfg80211_vendor_get_channel_list(struct wiphy *wiphy, struct wireless_de
 	if ((data == NULL) || !data_len)
 		return -EINVAL;
 
-	DBGLOG(REQ, INFO, "vendor command: data_len=%d\n", data_len);
-
 	attr = (struct nlattr *)data;
 	if (attr->nla_type == WIFI_ATTRIBUTE_BAND)
 		band = nla_get_u32(attr);
 
-	DBGLOG(REQ, INFO, "Get channel list for band: %d\n", band);
-
-	prGlueInfo = (P_GLUE_INFO_T) wiphy_priv(wiphy);
+	if (wdev->iftype == NL80211_IFTYPE_AP)
+		prGlueInfo = *((P_GLUE_INFO_T *) wiphy_priv(wiphy));
+	else
+		prGlueInfo = (P_GLUE_INFO_T) wiphy_priv(wiphy);
 	if (!prGlueInfo)
 		return -EFAULT;
 
-	if (band == 0) { /* 2.4G band */
-		rlmDomainGetChnlList(prGlueInfo->prAdapter, BAND_2G4,
+	switch (band) {
+	case 1: /* 2.4G band */
+		rlmDomainGetChnlList(prGlueInfo->prAdapter, BAND_2G4, TRUE,
 			     64, &ucNumOfChannel, aucChannelList);
-	} else { /* 5G band */
-		rlmDomainGetChnlList(prGlueInfo->prAdapter, BAND_5G,
+		break;
+	case 2: /* 5G band without DFS channels */
+		rlmDomainGetChnlList(prGlueInfo->prAdapter, BAND_5G, TRUE,
 			     64, &ucNumOfChannel, aucChannelList);
+		break;
+	case 4: /* 5G band DFS channels only */
+		rlmDomainGetDfsChnls(prGlueInfo->prAdapter, 64, &ucNumOfChannel, aucChannelList);
+		break;
+	default:
+		ucNumOfChannel = 0;
+		break;
 	}
 
 	kalMemZero(channels, sizeof(channels));
@@ -140,11 +149,12 @@ int mtk_cfg80211_vendor_get_channel_list(struct wiphy *wiphy, struct wireless_de
 		if (channels[j] == 0)
 			continue;
 		else {
-			DBGLOG(REQ, INFO, "channels[%d] = %d\n", j, channels[j]);
+			DBGLOG(REQ, TRACE, "channels[%d] = %d\n", j, channels[j]);
 			j++;
 		}
 	}
 	num_channels = j;
+	DBGLOG(REQ, INFO, "Get channel list for band: %d, num_channels=%d\n", band, num_channels);
 
 	skb = cfg80211_vendor_cmd_alloc_reply_skb(wiphy, sizeof(channels));
 	if (!skb) {
