@@ -121,7 +121,7 @@
  *#define TPD_KEYS                					{ KEY_MENU, KEY_HOMEPAGE, KEY_BACK}
  *#define TPD_KEYS_DIM            					{{80,900,20,TPD_BUTTON_HEIGH}, {240,900,20,TPD_BUTTON_HEIGH}, {400,900,20,TPD_BUTTON_HEIGH}}
  */
-#define TPD_KEYS                { KEY_MENU, KEY_HOMEPAGE, KEY_BACK}
+#define TPD_KEYS                { KEY_APPSELECT, KEY_HOMEPAGE, KEY_BACK}
 #define TPD_KEYS_DIM            	{{270,2500,20,TPD_BUTTON_HEIGH}, {540,2500,20,TPD_BUTTON_HEIGH}, {810,2500,20,TPD_BUTTON_HEIGH}}
 /*********************Custom Define end*************************************************/
 #define MT_PROTOCOL_B                                                /* change by lixh10  */
