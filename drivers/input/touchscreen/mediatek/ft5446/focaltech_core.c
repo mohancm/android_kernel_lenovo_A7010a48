@@ -194,6 +194,7 @@ static void msg_dma_release(struct i2c_client *client)
 #ifdef TPD_HAVE_BUTTON
 static int tpd_keys_local[TPD_KEY_COUNT] = TPD_KEYS;
 static int tpd_keys_dim_local[TPD_KEY_COUNT][4] = TPD_KEYS_DIM;
+bool keypad_disabled = false;
 #endif
 #if (defined(TPD_WARP_START) && defined(TPD_WARP_END))
 static int tpd_wb_start_local[TPD_WARP_CNT] = TPD_WARP_START;
@@ -639,6 +640,34 @@ static DEVICE_ATTR(tpd_suspend_status, 0664,
 		   lenovo_gesture_wakeup_store);
 #endif
 
+#ifdef TPD_HAVE_BUTTON
+static ssize_t tpd_keypad_show(struct device *dev,
+			      struct device_attribute *attr, char *buf)
+{
+	return snprintf(buf, PAGE_SIZE, "%d\n", keypad_disabled);
+}
+
+static ssize_t tpd_keypad_store(struct device *dev,
+			       struct device_attribute *attr, const char *buf, size_t count)
+{
+	unsigned long val;
+	int error;
+	error = sstrtoul(buf, 10, &val);
+	if (error)
+		return error;
+	if (val == 1) {
+		keypad_disabled = true;
+	} else {
+		keypad_disabled = false;
+	}
+	return count;
+}
+
+static DEVICE_ATTR(tpd_keypad_status, 0664,
+		   tpd_keypad_show,
+		   tpd_keypad_store);
+#endif
+
 static struct attribute *fts_touch_attrs[] = {
 	&dev_attr_touchpanel_info.attr,
 #if FTS_GESTRUE_EN
@@ -647,6 +676,9 @@ static struct attribute *fts_touch_attrs[] = {
 #endif
 #if FTS_GLOVE_EN
 	&dev_attr_tpd_glove_status.attr,
+#endif
+#ifdef TPD_HAVE_BUTTON
+	&dev_attr_tpd_keypad_status.attr,
 #endif
 #ifdef LENOVO_CTP_TEST_FLUENCY
 	&dev_attr_fts_test_fluency.attr,
@@ -1367,6 +1399,12 @@ static int fts_report_value(struct ts_event *data)
 
 	for (i = 0; i < data->touch_point; i++) {
 		input_mt_slot(tpd->dev, data->au8_finger_id[i]);
+
+		#ifdef TPD_HAVE_BUTTON
+		if (keypad_disabled == true && data->au16_y[i] == 2500) {
+			continue;
+		}
+		#endif
 
 		if (data->au8_touch_event[i] == 0 || data->au8_touch_event[i] == 2) {
 			/*
