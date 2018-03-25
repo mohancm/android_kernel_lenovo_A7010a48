@@ -109,9 +109,9 @@
  */
 
 
-#define FTS_CTL_IIC
-#define SYSFS_DEBUG
-#define FTS_APK_DEBUG
+//#define FTS_CTL_IIC
+//#define SYSFS_DEBUG
+//#define FTS_APK_DEBUG
 
 
 #if GTP_ESD_PROTECT
