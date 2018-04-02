@@ -1572,6 +1572,8 @@ int arizona_hpdet_start(struct arizona_extcon_info *info)
 			goto err;
 		}
 		arizona_extcon_hp_clamp(info, true);
+
+		arizona_hpdet_start_micd(info);
 		break;
 	}
 
@@ -1600,10 +1602,21 @@ void arizona_hpdet_restart(struct arizona_extcon_info *info)
 	struct arizona *arizona = info->arizona;
 
 	/* Reset back to starting range */
+	regmap_update_bits(arizona->regmap, ARIZONA_MIC_DETECT_1,
+			   ARIZONA_MICD_ENA, 0);
 	regmap_update_bits(arizona->regmap,
 			   ARIZONA_HEADPHONE_DETECT_1,
 			   ARIZONA_HP_IMPEDANCE_RANGE_MASK |
 			   ARIZONA_HP_POLL, 0);
+
+	switch (info->accdet_ip) {
+	case 0:
+		break;
+	default:
+		regmap_update_bits(arizona->regmap, ARIZONA_MIC_DETECT_1,
+				   ARIZONA_MICD_ENA, ARIZONA_MICD_ENA);
+		break;
+	}
 
 	regmap_update_bits(arizona->regmap,
 			   ARIZONA_HEADPHONE_DETECT_1,
@@ -1616,6 +1629,8 @@ void arizona_hpdet_stop(struct arizona_extcon_info *info)
 	struct arizona *arizona = info->arizona;
 
 	/* Reset back to starting range */
+	arizona_hpdet_stop_micd(info);
+
 	regmap_update_bits(arizona->regmap,
 			   ARIZONA_HEADPHONE_DETECT_1,
 			   ARIZONA_HP_IMPEDANCE_RANGE_MASK |
