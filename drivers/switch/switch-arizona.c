@@ -256,7 +256,7 @@ static ssize_t arizona_extcon_mic_show(struct device *dev,
 				       char *buf);
 static DEVICE_ATTR(mic_impedance, S_IRUGO, arizona_extcon_mic_show, NULL);
 
-inline bool arizona_is_lineout(struct arizona_extcon_info *info)
+static inline bool arizona_is_lineout(struct arizona_extcon_info *info)
 {
 	return info->arizona->hp_impedance_x100 >= ARIZONA_HPDET_LINEOUT;
 }
